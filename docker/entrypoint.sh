@@ -19,6 +19,13 @@ then
     exit 1
 fi
 
+
+if [[ -z "$INPUT_CLUSTER_NAME" ]]
+then
+    echo "CLUSTER_NAME is missing"
+    exit 1
+fi
+
 if [[ -z "$INPUT_SERVICE_NAME" ]]
 then
     echo "SERVICE_NAME is missing"
@@ -46,7 +53,7 @@ do
 	if [[ "$Line" == *"${INPUT_SERVICE_NAME}"* ]]
 	then
 		Line2=$(echo "$Line" | cut -d "\"" -f 2)
-  		aws ecs list-tasks --cluster cluster-pro --service-name "$Line2" > result2.txt
+  		aws ecs list-tasks --cluster ${INPUT_CLUSTER_NAME} --service-name "$Line2" > result2.txt
   		for((j=0; j < $(jq ' .[] | length' result2.txt ); j++))
   		do
 			if [[ "${INPUT_CURRENT_IMAGE}" != $(cat result2.txt | jq ".taskArns[$j]" | cut -d "\"" -f 2) ]]
